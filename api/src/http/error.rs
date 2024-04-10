@@ -6,6 +6,8 @@ use axum::Json;
 use std::borrow::Cow;
 use std::collections::HashMap;
 
+use super::types::{ResponseCode, ResponseWrapper};
+
 /// A common error type that can be used throughout the API.
 ///
 /// Can be returned in a `Result` from an API handler function.
@@ -15,9 +17,21 @@ use std::collections::HashMap;
 /// message in a plain text body, or a JSON body in the case of `UnprocessableEntity`.
 #[derive(thiserror::Error, Debug)]
 pub enum Error {
+    #[error("Invalid receive window")]
+    InvalidRecvWindow,
+
+    #[error("Invalid timestamp. timestamp for this request is outside of the recvWindow. Or timestamp for this request was 1000ms ahead of the server's time.")]
+    InvalidTimestamp,
+
+    #[error("invalid signature")]
+    InvalidSignature,
+
     /// Return `401 Unauthorized`
     #[error("authentication required")]
     Unauthorized,
+
+    #[error("invalid argument")]
+    InvalidArgument(String),
 
     /// Return `403 Forbidden`
     #[error("user may not perform that action")]
@@ -83,11 +97,29 @@ impl Error {
 
     fn status_code(&self) -> StatusCode {
         match self {
+            Self::InvalidRecvWindow => StatusCode::BAD_REQUEST,
+            Self::InvalidSignature => StatusCode::UNAUTHORIZED,
             Self::Unauthorized => StatusCode::UNAUTHORIZED,
+            Self::InvalidArgument(_) => StatusCode::BAD_REQUEST,
             Self::Forbidden => StatusCode::FORBIDDEN,
             Self::NotFound => StatusCode::NOT_FOUND,
             Self::UnprocessableEntity { .. } => StatusCode::UNPROCESSABLE_ENTITY,
             Self::Anyhow(_) => StatusCode::INTERNAL_SERVER_ERROR,
+            Self::InvalidTimestamp => StatusCode::BAD_REQUEST,
+        }
+    }
+
+    fn response_code(&self) -> ResponseCode {
+        match self {
+            Self::InvalidRecvWindow => ResponseCode::InvalidRecvWindow,
+            Self::InvalidSignature => ResponseCode::InvalidSignature,
+            Self::Unauthorized => ResponseCode::InvalidRecvWindow,
+            Self::InvalidArgument(_) => ResponseCode::InvalidArgument,
+            Self::Forbidden => ResponseCode::InvalidRecvWindow,
+            Self::NotFound => ResponseCode::InvalidRecvWindow,
+            Self::UnprocessableEntity { .. } => ResponseCode::InvalidRecvWindow,
+            Self::Anyhow(_) => ResponseCode::InvalidRecvWindow,
+            Self::InvalidTimestamp => ResponseCode::InvalidTimestamp,
         }
     }
 }
@@ -99,46 +131,76 @@ impl Error {
 // to the client.
 impl IntoResponse for Error {
     fn into_response(self) -> axum::response::Response {
-        match self {
-            Self::UnprocessableEntity { errors } => {
-                #[derive(serde::Serialize)]
-                struct Errors {
-                    errors: HashMap<Cow<'static, str>, Vec<Cow<'static, str>>>,
-                }
+        // match self {
+        //     Self::UnprocessableEntity { errors } => {
+        //         #[derive(serde::Serialize)]
+        //         struct Errors {
+        //             errors: HashMap<Cow<'static, str>, Vec<Cow<'static, str>>>,
+        //         }
 
-                return (StatusCode::UNPROCESSABLE_ENTITY, Json(Errors { errors })).into_response();
-            }
-            Self::Unauthorized => {
+        //         return (StatusCode::UNPROCESSABLE_ENTITY, Json(Errors { errors })).into_response();
+        //     }
+
+        //     Self::Unauthorized => {
+        //         return (
+        //             self.status_code(),
+        //             // Include the `WWW-Authenticate` challenge required in the specification
+        //             // for the `401 Unauthorized` response code:
+        //             // https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401
+        //             //
+        //             // The Realworld spec does not specify this:
+        //             // https://realworld-docs.netlify.app/docs/specs/backend-specs/error-handling
+        //             //
+        //             // However, at Launchbadge we try to adhere to web standards wherever possible,
+        //             // if nothing else than to try to act as a vanguard of sanity on the web.
+        //             [(WWW_AUTHENTICATE, HeaderValue::from_static("Token"))]
+        //                 .into_iter()
+        //                 .collect::<HeaderMap>(),
+        //             self.to_string(),
+        //         )
+        //             .into_response();
+        //     }
+
+        //     Self::Anyhow(ref e) => {
+        //         // TODO: we probably want to use `tracing` instead
+        //         // so that this gets linked to the HTTP request by `TraceLayer`.
+        //         log::error!("Generic error: {:?}", e);
+        //     }
+
+        //     // Other errors get mapped normally.
+        //     _ => (),
+        // }
+
+        match self {
+            Self::Anyhow(ref e) => {
+                // TODO: this should not happen and therefore be logged to sentry
                 return (
-                    self.status_code(),
-                    // Include the `WWW-Authenticate` challenge required in the specification
-                    // for the `401 Unauthorized` response code:
-                    // https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401
-                    //
-                    // The Realworld spec does not specify this:
-                    // https://realworld-docs.netlify.app/docs/specs/backend-specs/error-handling
-                    //
-                    // However, at Launchbadge we try to adhere to web standards wherever possible,
-                    // if nothing else than to try to act as a vanguard of sanity on the web.
-                    [(WWW_AUTHENTICATE, HeaderValue::from_static("Token"))]
-                        .into_iter()
-                        .collect::<HeaderMap>(),
-                    self.to_string(),
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    "An unexpected error occurred. We are investigating the problem.",
                 )
                     .into_response();
             }
-
-            Self::Anyhow(ref e) => {
-                // TODO: we probably want to use `tracing` instead
-                // so that this gets linked to the HTTP request by `TraceLayer`.
-                log::error!("Generic error: {:?}", e);
+            Self::InvalidArgument(ref body) => {
+                return ResponseWrapper {
+                    code: self.response_code(),
+                    message: self.to_string(),
+                    data: body.to_owned(),
+                }
+                .into_response();
             }
-
-            // Other errors get mapped normally.
             _ => (),
         }
 
-        (self.status_code(), self.to_string()).into_response()
+        // Phantom data
+        let data: Option<u8> = None;
+
+        let response = ResponseWrapper {
+            code: self.response_code(),
+            message: self.to_string(),
+            data,
+        };
+
+        response.into_response()
     }
 }
 

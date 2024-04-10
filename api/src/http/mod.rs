@@ -6,15 +6,21 @@ use std::sync::Arc;
 use tower::{Layer, ServiceBuilder};
 
 // Utility modules.
+mod tests;
 
 /// Defines a common error type to use for all request handlers, compliant with the Realworld spec.
 mod error;
+
+/// Contains definitions for application-specific parameters to handler functions,
+/// such as `AuthSignature` which checks for the `signature: <signature>` header in the request,
+/// verifies `<signature>` as a base64 rsa signature and checks the signature.
+mod extractor;
 
 mod middleware;
 
 /// A catch-all module for other common types in the API. Arguably, the `error`
 /// modules could have been children of this one, but that's more of a subjective decision.
-mod types;
+pub(crate) mod types;
 
 pub use self::error::Error;
 
@@ -22,9 +28,11 @@ pub type Result<T, E = Error> = std::result::Result<T, E>;
 
 use tower_http::{add_extension::AddExtensionLayer, trace::TraceLayer};
 
+// Endpoint libraries
+mod task;
 mod time;
 
-mod rsa;
+pub(crate) mod rsa;
 
 /// The core type through which handler functions can access common API state.
 ///
@@ -40,8 +48,8 @@ mod rsa;
 /// on and off, and disable any unused extension objects) but it's really up to a
 /// judgement call.
 #[derive(Clone)]
-struct ApiContext {
-    config: Arc<Config>,
+pub(crate) struct ApiContext {
+    pub(crate) config: Arc<Config>,
 }
 
 pub async fn serve(config: Config) -> anyhow::Result<()> {
@@ -81,9 +89,9 @@ pub async fn serve(config: Config) -> anyhow::Result<()> {
         .context("error running HTTP server")
 }
 
-fn api_router() -> Router {
+pub(crate) fn api_router() -> Router {
     // This is the order that the modules were authored in.
-    let routes = time::router();
+    let routes = time::router().merge(task::router());
 
     Router::new().nest("/v1", routes)
 }

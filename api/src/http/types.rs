@@ -3,7 +3,7 @@ use axum::{
     response::{IntoResponse, Response},
     Json,
 };
-use serde::{Serialize, Serializer};
+use serde::{de::Visitor, Deserialize, Serialize, Serializer};
 
 #[derive(Debug)]
 pub enum ResponseCode {
@@ -33,28 +33,56 @@ impl ResponseCode {
     pub fn code(&self) -> &'static str {
         match self {
             /// Success
-            Self::Success => "000001",
+            Self::Success => "000000",
 
             /// Too many requests
-            Self::TooManyRequests => "000002",
+            Self::TooManyRequests => "000001",
 
             /// System busy
-            Self::SystemBusy => "000003",
+            Self::SystemBusy => "000002",
 
             /// Invalid signature
-            Self::InvalidSignature => "000004",
+            Self::InvalidSignature => "000003",
 
             /// Invalid recvWindow
-            Self::InvalidRecvWindow => "000005",
+            Self::InvalidRecvWindow => "000004",
 
             /// invalid timestamp. timestamp for this request is outside of the recvWindow. Or timestamp for this request was 1000ms ahead of the server's time.
-            Self::InvalidTimestamp => "000006",
+            Self::InvalidTimestamp => "000005",
 
             /// Invalid argument
-            Self::InvalidArgument => "000007",
+            Self::InvalidArgument => "000006",
+        }
+    }
+
+    pub fn from_code(code: &str) -> Option<Self> {
+        match code {
+            /// Success
+            "000000" => Some(Self::Success),
+
+            /// Too many requests
+            "000001" => Some(Self::TooManyRequests),
+
+            /// System busy
+            "000002" => Some(Self::SystemBusy),
+
+            /// Invalid signature
+            "000003" => Some(Self::InvalidSignature),
+
+            /// Invalid recvWindow
+            "000004" => Some(Self::InvalidRecvWindow),
+
+            /// invalid timestamp. timestamp for this request is outside of the recvWindow. Or timestamp for this request was 1000ms ahead of the server's time.
+            "000005" => Some(Self::InvalidTimestamp),
+
+            /// Invalid argument
+            "000006" => Some(Self::InvalidArgument),
+            _ => None,
         }
     }
 }
+
+struct ResponseCodeVisitor;
 
 impl Into<StatusCode> for ResponseCode {
     fn into(self) -> StatusCode {
@@ -62,11 +90,33 @@ impl Into<StatusCode> for ResponseCode {
             Self::Success => StatusCode::OK,
             Self::TooManyRequests => StatusCode::TOO_MANY_REQUESTS,
             Self::SystemBusy => StatusCode::SERVICE_UNAVAILABLE,
-            Self::InvalidSignature => StatusCode::BAD_REQUEST,
+            Self::InvalidSignature => StatusCode::UNAUTHORIZED,
             Self::InvalidRecvWindow => StatusCode::BAD_REQUEST,
             Self::InvalidTimestamp => StatusCode::BAD_REQUEST,
             Self::InvalidArgument => StatusCode::BAD_REQUEST,
         }
+    }
+}
+
+impl<'de> Visitor<'de> for ResponseCodeVisitor {
+    type Value = ResponseCode;
+
+    fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
+        formatter.write_str("A code between 000000 and 000006")
+    }
+
+    fn visit_str<E>(self, v: &str) -> Result<Self::Value, E>
+    where
+        E: serde::de::Error,
+    {
+        ResponseCode::from_code(v).ok_or(E::custom(format!("{} is not a valid error code", v)))
+    }
+
+    fn visit_string<E>(self, v: String) -> Result<Self::Value, E>
+    where
+        E: serde::de::Error,
+    {
+        ResponseCode::from_code(&v).ok_or(E::custom(format!("{} is not a valid error code", &v)))
     }
 }
 
@@ -79,7 +129,16 @@ impl Serialize for ResponseCode {
     }
 }
 
-#[derive(Debug, serde::Serialize)]
+impl<'de> Deserialize<'de> for ResponseCode {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        deserializer.deserialize_string(ResponseCodeVisitor)
+    }
+}
+
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
 pub struct ResponseWrapper<T: Serialize> {
     pub code: ResponseCode,
     pub message: String,

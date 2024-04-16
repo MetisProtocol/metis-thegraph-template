@@ -14,3 +14,6 @@ docs/
 .env
 
 target
+
+node_modules/
+generated/

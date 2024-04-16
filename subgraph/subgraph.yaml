@@ -16,41 +16,11 @@ dataSources:
       apiVersion: 0.0.7
       language: wasm/assemblyscript
       entities:
-        - Issue
-        - Redeem
-        - Deprecate
-        - Params
-        - DestroyedBlackFunds
-        - AddedBlackList
-        - RemovedBlackList
-        - Approval
-        - Transfer
-        - Pause
-        - Unpause
+        - StakeLP
       abis:
         - name: HerculusRestaker
           file: ./abis/HerculusRestaker.json
       eventHandlers:
-        - event: Issue(uint256)
-          handler: handleIssue
-        - event: Redeem(uint256)
-          handler: handleRedeem
-        - event: Deprecate(address)
-          handler: handleDeprecate
-        - event: Params(uint256,uint256)
-          handler: handleParams
-        - event: DestroyedBlackFunds(address,uint256)
-          handler: handleDestroyedBlackFunds
-        - event: AddedBlackList(address)
-          handler: handleAddedBlackList
-        - event: RemovedBlackList(address)
-          handler: handleRemovedBlackList
-        - event: Approval(indexed address,indexed address,uint256)
-          handler: handleApproval
-        - event: Transfer(indexed address,indexed address,uint256)
-          handler: handleTransfer
-        - event: Pause()
-          handler: handlePause
-        - event: Unpause()
-          handler: handleUnpause
+        - event: StakeLP(indexed address,uint256,uint256,uint256,uint256)
+          handler: handleStakeLP
       file: ./src/herculus-restaker.ts

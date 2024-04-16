@@ -6,7 +6,6 @@
 // to put the application bootstrap logic here is an open question. Both approaches have their
 // upsides and their downsides. Your input is welcome!
 
-use anyhow::Context;
 use clap::Parser;
 
 use binance_campaign_api::{http, Config};

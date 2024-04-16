@@ -1,11 +1,7 @@
 use std::time::UNIX_EPOCH;
 
 use anyhow::Context;
-use axum::{
-    response::{IntoResponse, Response},
-    routing::get,
-    Json, Router,
-};
+use axum::{routing::get, Json, Router};
 
 use super::{
     extractor::{AuthSignature, RecvWindowQueryParams},

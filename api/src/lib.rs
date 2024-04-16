@@ -4,14 +4,18 @@ pub use config::Config;
 
 pub mod http;
 
+mod db;
+
 #[cfg(test)]
 mod test {
+    pub const TEST_RSA_PUBLIC_KEY: &'static str = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCbWoXkbbwfcZnLW43Vsh1YMu1W5a4reIHvcMYqFjWJl4huA7JKZdC/O3pmEqxdSGZPkerDoN70yfFUPJwKHF+Zc30CWSHTgN+ivR1W4EwyQd48b7WfdU6NVNu2p0p9B2dvcytsdIZ+FKjDwjXplw21//9zX7xLr2rF+YeP1mp20QIDAQAB";
+    pub const TEST_RSA_PRIVATE_KEY : &'static str= "MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJtaheRtvB9xmctbjdWyHVgy7Vblrit4ge9wxioWNYmXiG4Dskpl0L87emYSrF1IZk+R6sOg3vTJ8VQ8nAocX5lzfQJZIdOA36K9HVbgTDJB3jxvtZ91To1U27anSn0HZ29zK2x0hn4UqMPCNemXDbX//3NfvEuvasX5h4/WanbRAgMBAAECgYBhrrGxyC4Zt1x0ucSdMbmx05PYp+K0ArnwzIBNxlkzgsyOIFTi4tI27DcyJ1up6/Qo5B8xkt2eHbxYsyOKV/zjjNo7afmQ/woBPgCxuErNJsdo2g0nH0k8A4Pw0FcLQL4sQocyfYsFMNhP56SY5fkgRAdAYPJ5v5RG47dLVoMGYQJBANF69BOAa/V+wubh5d5+l04zDkt/xMq7AoeHbeABpEOAEVwEfYqrH2H/BreUod8LixC6CR1KZZ9s+nnSGd9kz+sCQQC92nGk32kU09OcXtQzRn1Fi2AHvsSShQ8rwf40Buxl0IZK6sQkkSb2Eg1bA+E5KfAbzfX2YziAH/KcsdaxZ2EzAkEAwlK3tpuMCplDviBSOBrgyzcLjLgC2zmt+AGGyKVdNwzHjb/QoeFqZGLKXWRw4NL5d1PMfrJ0IPdcR8PCInyHbwJAT2CqzT1fiQa73hBD9qBNNit83iAjvgMGAcydRRFz+2nBDEe19Hf/6zhG/zvTCfx/2JA3e2mmsOMqo9szIX9QwwJAVfTewPB76mTwrTDbvBXAAXRU1WKpmrDiKHCViRO8Z6iP/KwwQxqpGiZTXr6zN8onidVjRzWJHGcWq3cCGO0v9w==";
+
     use std::net::SocketAddr;
     use std::sync::Arc;
     use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
-    use crate::http::rsa::sign_request;
-    use crate::http::rsa::{TEST_RSA_PRIVATE_KEY, TEST_RSA_PUBLIC_KEY};
+    use crate::http::rsa::test_util::sign_request;
     use crate::http::types::ResponseCode;
     use crate::http::types::ResponseWrapper;
     use crate::http::{api_router, ApiContext};
@@ -109,12 +113,20 @@ mod test {
     ) -> (StatusCode, ResponseWrapper<serde_json::Value>) {
         let config = Config {
             rsa_public_key: TEST_RSA_PUBLIC_KEY.to_string(),
+            database_url: "postgres://graph-node:let-me-in@localhost:5432/graph-node".to_string(),
         };
+
+        // FIXME: this should be a mock database instead of a real one
+        let db = Pool::builder()
+            .max_size(50)
+            .build(ConnectionManager::<PgConnection>::new(config.database_url))
+            .context("Could not connect to database_url")?;
 
         let mut app = api_router()
             .layer(MockConnectInfo(SocketAddr::from(([0, 0, 0, 0], 8080))))
             .layer(AddExtensionLayer::new(ApiContext {
                 config: Arc::new(config),
+                db,
             }))
             .layer(TraceLayer::new_for_http())
             .into_service();

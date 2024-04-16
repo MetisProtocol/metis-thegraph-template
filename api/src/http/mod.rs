@@ -1,12 +1,10 @@
 use crate::config::Config;
 use anyhow::Context;
-use axum::{middleware::AddExtension, Extension, Router};
+use axum::Router;
+
 use std::net::SocketAddr;
 use std::sync::Arc;
-use tower::{Layer, ServiceBuilder};
-
-// Utility modules.
-mod tests;
+use tower::ServiceBuilder;
 
 /// Defines a common error type to use for all request handlers, compliant with the Realworld spec.
 mod error;
@@ -23,6 +21,7 @@ mod middleware;
 pub(crate) mod types;
 
 pub use self::error::Error;
+use self::types::DatabasePool;
 
 pub type Result<T, E = Error> = std::result::Result<T, E>;
 
@@ -50,9 +49,10 @@ pub(crate) mod rsa;
 #[derive(Clone)]
 pub(crate) struct ApiContext {
     pub(crate) config: Arc<Config>,
+    pub(crate) db: DatabasePool,
 }
 
-pub async fn serve(config: Config) -> anyhow::Result<()> {
+pub async fn serve(config: Config, db: DatabasePool) -> anyhow::Result<()> {
     // Bootstrapping an API is both more intuitive with Axum than Actix-web but also
     // a bit more confusing at the same time.
     //
@@ -71,6 +71,7 @@ pub async fn serve(config: Config) -> anyhow::Result<()> {
             // It seems very logically named, but that makes it a bit annoying to type over and over.
             .layer(AddExtensionLayer::new(ApiContext {
                 config: Arc::new(config),
+                db,
             }))
             // Enables logging. Use `RUST_LOG=tower_http=debug`
             .layer(TraceLayer::new_for_http()),

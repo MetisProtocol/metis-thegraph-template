@@ -21,4 +21,8 @@ pub struct Config {
     /// In practice, it should be a long, random string that would be infeasible to brute-force.
     #[clap(long, env)]
     pub rsa_public_key: String,
+
+    /// The connection URL for the Postgres database this application should use.
+    #[clap(long, env)]
+    pub database_url: String,
 }

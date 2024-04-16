@@ -1,9 +1,15 @@
 use axum::{
     http::StatusCode,
     response::{IntoResponse, Response},
-    Json,
+};
+use diesel::{
+    r2d2::{ConnectionManager, Pool},
+    PgConnection,
 };
 use serde::{de::Visitor, Deserialize, Serialize, Serializer};
+
+/// We use a Postgres connection pool
+pub type DatabasePool = Pool<ConnectionManager<PgConnection>>;
 
 #[derive(Debug)]
 pub enum ResponseCode {
@@ -32,50 +38,50 @@ pub enum ResponseCode {
 impl ResponseCode {
     pub fn code(&self) -> &'static str {
         match self {
-            /// Success
+            // Success
             Self::Success => "000000",
 
-            /// Too many requests
+            // Too many requests
             Self::TooManyRequests => "000001",
 
-            /// System busy
+            // System busy
             Self::SystemBusy => "000002",
 
-            /// Invalid signature
+            // Invalid signature
             Self::InvalidSignature => "000003",
 
-            /// Invalid recvWindow
+            // Invalid recvWindow
             Self::InvalidRecvWindow => "000004",
 
-            /// invalid timestamp. timestamp for this request is outside of the recvWindow. Or timestamp for this request was 1000ms ahead of the server's time.
+            // invalid timestamp. timestamp for this request is outside of the recvWindow. Or timestamp for this request was 1000ms ahead of the server's time.
             Self::InvalidTimestamp => "000005",
 
-            /// Invalid argument
+            // Invalid argument
             Self::InvalidArgument => "000006",
         }
     }
 
     pub fn from_code(code: &str) -> Option<Self> {
         match code {
-            /// Success
+            // Success
             "000000" => Some(Self::Success),
 
-            /// Too many requests
+            // Too many requests
             "000001" => Some(Self::TooManyRequests),
 
-            /// System busy
+            // System busy
             "000002" => Some(Self::SystemBusy),
 
-            /// Invalid signature
+            // Invalid signature
             "000003" => Some(Self::InvalidSignature),
 
-            /// Invalid recvWindow
+            // Invalid recvWindow
             "000004" => Some(Self::InvalidRecvWindow),
 
-            /// invalid timestamp. timestamp for this request is outside of the recvWindow. Or timestamp for this request was 1000ms ahead of the server's time.
+            // invalid timestamp. timestamp for this request is outside of the recvWindow. Or timestamp for this request was 1000ms ahead of the server's time.
             "000005" => Some(Self::InvalidTimestamp),
 
-            /// Invalid argument
+            // Invalid argument
             "000006" => Some(Self::InvalidArgument),
             _ => None,
         }

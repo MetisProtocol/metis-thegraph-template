@@ -1,7 +1,4 @@
-use std::{
-    collections::HashMap,
-    time::{SystemTime, UNIX_EPOCH},
-};
+use std::time::{SystemTime, UNIX_EPOCH};
 
 use super::{
     rsa::{load_rsa_public_key_from_base64, verify},
@@ -10,16 +7,11 @@ use super::{
 use anyhow::anyhow;
 use axum::{
     async_trait,
-    extract::{FromRequestParts, Query, RawQuery},
-    http::{
-        header::{HeaderValue, USER_AGENT},
-        request::Parts,
-        StatusCode,
-    },
-    routing::get,
-    Extension, Router,
+    extract::FromRequestParts,
+    http::{header::HeaderValue, request::Parts},
+    Extension,
 };
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 
 pub struct AuthSignature;
 
@@ -60,14 +52,6 @@ where
             .await
             .expect("BUG: ApiContext was not added as an extension");
 
-        // right now only GET requests are present in the partner api, so we just get the search.
-        let search = RawQuery::from_request_parts(parts, state)
-            .await
-            .map_err(|_| {
-                log::debug!("Request did not have any search parameters, but it should.");
-                Error::InvalidSignature
-            })?;
-
         let query = urlencoding::decode(parts.uri.query().unwrap())
             .unwrap()
             .to_string();
@@ -93,7 +77,7 @@ where
 {
     type Rejection = Error;
 
-    async fn from_request_parts(parts: &mut Parts, state: &S) -> Result<Self, Self::Rejection> {
+    async fn from_request_parts(parts: &mut Parts, _state: &S) -> Result<Self, Self::Rejection> {
         let query = parts.uri.query().unwrap_or_default();
         let query_pairs = serde_urlencoded::from_str::<Vec<(String, String)>>(query)
             .map_err(|_| Error::Anyhow(anyhow!("Could not parse query parameters.")))?;

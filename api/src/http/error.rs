@@ -1,8 +1,6 @@
-use axum::body::{Bytes, HttpBody};
-use axum::http::header::WWW_AUTHENTICATE;
-use axum::http::{HeaderMap, HeaderValue, Response, StatusCode};
+use axum::http::StatusCode;
 use axum::response::IntoResponse;
-use axum::Json;
+use log::error;
 use std::borrow::Cow;
 use std::collections::HashMap;
 
@@ -95,19 +93,19 @@ impl Error {
         Self::UnprocessableEntity { errors: error_map }
     }
 
-    fn status_code(&self) -> StatusCode {
-        match self {
-            Self::InvalidRecvWindow => StatusCode::BAD_REQUEST,
-            Self::InvalidSignature => StatusCode::UNAUTHORIZED,
-            Self::Unauthorized => StatusCode::UNAUTHORIZED,
-            Self::InvalidArgument(_) => StatusCode::BAD_REQUEST,
-            Self::Forbidden => StatusCode::FORBIDDEN,
-            Self::NotFound => StatusCode::NOT_FOUND,
-            Self::UnprocessableEntity { .. } => StatusCode::UNPROCESSABLE_ENTITY,
-            Self::Anyhow(_) => StatusCode::INTERNAL_SERVER_ERROR,
-            Self::InvalidTimestamp => StatusCode::BAD_REQUEST,
-        }
-    }
+    // fn status_code(&self) -> StatusCode {
+    //     match self {
+    //         Self::InvalidRecvWindow => StatusCode::BAD_REQUEST,
+    //         Self::InvalidSignature => StatusCode::UNAUTHORIZED,
+    //         Self::Unauthorized => StatusCode::UNAUTHORIZED,
+    //         Self::InvalidArgument(_) => StatusCode::BAD_REQUEST,
+    //         Self::Forbidden => StatusCode::FORBIDDEN,
+    //         Self::NotFound => StatusCode::NOT_FOUND,
+    //         Self::UnprocessableEntity { .. } => StatusCode::UNPROCESSABLE_ENTITY,
+    //         Self::Anyhow(_) => StatusCode::INTERNAL_SERVER_ERROR,
+    //         Self::InvalidTimestamp => StatusCode::BAD_REQUEST,
+    //     }
+    // }
 
     fn response_code(&self) -> ResponseCode {
         match self {
@@ -173,6 +171,7 @@ impl IntoResponse for Error {
 
         match self {
             Self::Anyhow(ref e) => {
+                error!("An unexpected error occured: {:?}", e);
                 // TODO: this should not happen and therefore be logged to sentry
                 return (
                     StatusCode::INTERNAL_SERVER_ERROR,

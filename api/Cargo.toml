@@ -10,6 +10,7 @@ anyhow = "1.0.81"
 async-trait = "0.1.79"
 axum = { version = "0.7.5", features = ["tower-log"] }
 base64 = "0.22.0"
+bigdecimal = { version = "0.4.3", features = ["serde"] }
 clap = { version = "4.5.4", features = ["derive", "env"] }
 diesel = { version = "2.1.5", features = ["postgres", "r2d2", "extras"] }
 dotenv = "0.15.0"

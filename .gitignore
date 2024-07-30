@@ -17,3 +17,6 @@ target
 
 node_modules/
 generated/
+
+subgraph/data/
+subgraph/build/

@@ -14,6 +14,7 @@
 			"env": {
 				"RUST_LOG": "DEBUG",
 				"RSA_PUBLIC_KEY": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCbWoXkbbwfcZnLW43Vsh1YMu1W5a4reIHvcMYqFjWJl4huA7JKZdC/O3pmEqxdSGZPkerDoN70yfFUPJwKHF+Zc30CWSHTgN+ivR1W4EwyQd48b7WfdU6NVNu2p0p9B2dvcytsdIZ+FKjDwjXplw21//9zX7xLr2rF+YeP1mp20QIDAQAB",
+				"DATABASE_URL": "postgres://graph-node:let-me-in@localhost:5432/graph-node"
 			}
 		}
 	]

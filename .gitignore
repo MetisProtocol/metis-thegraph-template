@@ -20,3 +20,5 @@ generated/
 
 subgraph/data/
 subgraph/build/
+
+.DS_Store

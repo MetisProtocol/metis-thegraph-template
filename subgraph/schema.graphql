@@ -1,25 +1,20 @@
 
-
-type StakeLP @entity(immutable: true) {
+type MetisDeposited @entity(immutable: true) {
   id: Bytes!
-  wallet: String!
-  startingAmount: BigInt!
-  artMetisAmount: BigInt!
+  user: String!
   metisAmount: BigInt!
-  lpTokenAmount: BigInt!
+  artMetisAmount: BigInt!
+  referralId: String!
   blockNumber: BigInt!
   blockTimestamp: BigInt!
   transactionHash: Bytes!
 }
 
-
 type Participant @entity(immutable: false) {
 	id: Bytes!
 	address: String!
-	totalMetisUsed: BigInt!
-	totalArtMetis: BigInt!
 	totalMetisAmount: BigInt!
-	totalLpTokenAmount: BigInt!
+  totalArtMetisAmount: BigInt!
 	totalTransactions: BigInt!
 	firstBlockNumber: BigInt!
 	lastBlockNumber: BigInt!

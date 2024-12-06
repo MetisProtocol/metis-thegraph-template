@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.22;
 
-import {BArtMetis} from "./BArtMetis.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
+import {BArtMetis} from "./BArtMetis.sol";
 import {IAMTDepositPool} from "./interfaces/IAMTDepositPool.sol";
 import {IArtMetis} from "./interfaces/IArtMetis.sol";
 
@@ -13,7 +15,7 @@ import {IArtMetis} from "./interfaces/IArtMetis.sol";
  * The locking applies for each staking action. A user has to unlock multiple times if they did multiple
  * staking actions on different occasions. This is done using ERC1155Supply to keep track of staking action.
  */
-contract StakeAndLock {
+contract StakeAndLock is Ownable(msg.sender) {
     struct StakeLockAction {
         uint256 metisAmount; // Metis amount staked
         uint256 artMetisAmount; // Received artMetis amount in the action
@@ -134,5 +136,16 @@ contract StakeAndLock {
         assert(transferred);
 
         emit Unlock(_artMetisAmount, block.timestamp);
+    }
+
+    /**
+     * @notice Recovers the funds sent to the contract in case of an emergency
+     * @dev This function can be only called by the owner
+     */
+    function emergencyRecoverToken(
+        address token,
+        uint256 amount
+    ) external onlyOwner {
+        IERC20(token).transfer(msg.sender, amount);
     }
 }

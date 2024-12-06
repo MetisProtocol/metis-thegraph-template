@@ -4,7 +4,8 @@
   "main": "index.js",
   "scripts": {
     "test": "hardhat test",
-    "deploy": "ts-node scripts/deploy-stake-and-lock.ts"
+    "deploy": "ts-node scripts/deploy-stake-and-lock.ts",
+    "deploy-mocks": "ts-node scripts/deploy-mocks-pool-and-artmetis.ts"
   },
   "keywords": [],
   "author": "",

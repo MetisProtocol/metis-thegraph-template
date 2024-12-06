@@ -25,9 +25,9 @@ async function main() {
             startTime: 1736402400,             // Tuesday, January 9, 2025 6:00:00 AM
             endTime: 1738216800,               // Tuesday, January 30, 2025 6:00:00 AM
             lockingPeriod: 21 * 24 * 60 * 60,  // 21 days
-            // todo: maybe deploy mocks?
-            amtDepositPoolAddress: "0x0000000000000000000000000000000000000001",
-            artmetisAddress: "0x0000000000000000000000000000000000000001"
+            // mocked deployments
+            amtDepositPoolAddress: "0x9432Cd7760921819a64526a226461a6a7d7C9219",
+            artmetisAddress: "0xca2379a781fF299887eA154886b8019D94f18097" 
         }
     }
 

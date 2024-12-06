@@ -21,4 +21,6 @@ generated/
 subgraph/data/
 subgraph/build/
 
+.latest.json
+
 .DS_Store

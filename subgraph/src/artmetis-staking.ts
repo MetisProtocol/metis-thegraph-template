@@ -1,20 +1,22 @@
-import { MetisDeposited as MetisDepositedEvent } from "../generated/AMTDepositPool/AMTDepositPool";
-import { Participant, MetisDeposited } from "../generated/schema";
+import { StakedAndLocked as StakedAndLockedEvent } from "../generated/StakeAndLock/StakeAndLock";
+import { Participant, StakedAndLocked } from "../generated/schema";
 import { BigInt } from "@graphprotocol/graph-ts";
 
 
 let one = BigInt.fromI32(1);
 
-export function handleMetisDeposited(event: MetisDepositedEvent): void {
-    let entity = new MetisDeposited(
+export function handleStakedAndLocked(event: StakedAndLockedEvent): void {
+    let entity = new StakedAndLocked(
         event.transaction.hash.concatI32(event.logIndex.toI32())
     );
 
-    entity.user = event.params._user.toHexString();
+    entity.actionId = event.params.actionId;
+    entity.user = event.params.user.toHexString();
 
-    entity.metisAmount = event.params._amount;
-    entity.artMetisAmount = event.params._artMetisAmount;
-    entity.referralId = event.params._referralId;
+    entity.metisAmount = event.params.metisAmount;
+    entity.artMetisAmount = event.params.artMetisAmount;
+    entity.referralId = event.params.referralId.toString();
+    entity.unlockTime = event.params.unlockTime;
 
     entity.blockNumber = event.block.number;
     entity.blockTimestamp = event.block.timestamp;
@@ -23,20 +25,20 @@ export function handleMetisDeposited(event: MetisDepositedEvent): void {
     entity.save();
 
 
-    let participant = Participant.load(event.params._user);
+    let participant = Participant.load(event.params.user);
     if (participant == null) {
-        participant = new Participant(event.params._user);
+        participant = new Participant(event.params.user);
+        participant.address = event.params.user.toHexString();
         participant.firstBlockNumber = event.block.number;
-        participant.address = event.params._user.toHexString();
     }
 
     participant.totalMetisAmount = participant.totalMetisAmount.plus(
-        event.params._amount
+        event.params.metisAmount
     );
     participant.totalArtMetisAmount = participant.totalArtMetisAmount.plus(
-        event.params._artMetisAmount
+        event.params.artMetisAmount
     );
-    participant.totalTransactions = participant.totalTransactions.plus(
+    participant.totalActionsCount = participant.totalActionsCount.plus(
         one
     );
 

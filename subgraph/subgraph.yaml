@@ -5,23 +5,23 @@ schema:
   file: ./schema.graphql
 dataSources:
   - kind: ethereum
-    name: AMTDepositPool
+    name: StakeAndLock
     network: mainnet
     source:
-      address: "0x96C4A48Abdf781e9c931cfA92EC0167Ba219ad8E"
-      abi: AMTDepositPool
-      startBlock: 19105079 # todo change this to a more calculated block number
+      address: "0x96C4A48Abdf781e9c931cfA92EC0167Ba219ad8E" # todo: change this address
+      abi: StakeAndLock
+      startBlock: 19105079 # todo: change this to to a block when the contract is deployed.
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
       language: wasm/assemblyscript
       entities:
-        - MetisDeposited
+        - StakedAndLocked
         - Participant
       abis:
-        - name: AMTDepositPool
-          file: ./abis/AMTDepositPool.json
+        - name: StakeAndLock
+          file: ./abis/StakeAndLock.json
       eventHandlers:
-        - event: MetisDeposited(indexed address,uint256,uint256,string)
-          handler: handleMetisDeposited
+        - event: StakedAndLocked(indexed uint256,indexed address,uint256,uint256,indexed string,uint256)
+          handler: handleStakedAndLocked
       file: ./src/artmetis-staking.ts

@@ -1,10 +1,12 @@
 
-type MetisDeposited @entity(immutable: true) {
+type StakedAndLocked @entity(immutable: true) {
   id: Bytes!
+  actionId: BigInt!
   user: String!
   metisAmount: BigInt!
   artMetisAmount: BigInt!
   referralId: String!
+  unlockTime: BigInt!
   blockNumber: BigInt!
   blockTimestamp: BigInt!
   transactionHash: Bytes!
@@ -15,7 +17,7 @@ type Participant @entity(immutable: false) {
 	address: String!
 	totalMetisAmount: BigInt!
   totalArtMetisAmount: BigInt!
-	totalTransactions: BigInt!
+	totalActionsCount: BigInt!
 	firstBlockNumber: BigInt!
 	lastBlockNumber: BigInt!
 }

@@ -135,7 +135,7 @@ describe("StakeAndLock", function () {
       // event
       await expect(tx)
         .to.emit(stakeAndLock, "StakedAndLocked")
-        .withArgs(actionId, account.address, ONE_GWEI, ONE_GWEI, "bla");
+        .withArgs(actionId, account.address, ONE_GWEI, ONE_GWEI, "bla", stakeTime + lockingPeriod + 1);
 
       // totalMetisStaked
       expect(await stakeAndLock.totalMetisStaked(account), "totalMetisStaked mapping wrong").to.eq(ONE_GWEI);

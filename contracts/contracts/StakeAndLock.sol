@@ -45,10 +45,11 @@ contract StakeAndLock {
         uint256 indexed actionId,
         address indexed user,
         uint256 metisAmount,
-        uint256 artmetisAmount,
-        string indexed referralId
+        uint256 artMetisAmount,
+        string indexed referralId,
+        uint256 unlockTime
     );
-    event Unlock(uint256 artmetisAmount, uint256 when);
+    event Unlock(uint256 artMetisAmount, uint256 when);
 
     constructor(
         uint256 _startTime,
@@ -92,10 +93,11 @@ contract StakeAndLock {
             _referralId
         );
         ++stakeLockActionsCount;
+        uint256 unlockTime = block.timestamp + lockingPeriod;
         stakeLockActions[stakeLockActionsCount] = StakeLockAction({
             metisAmount: msg.value,
             artMetisAmount: _artMetisAmount,
-            unlockTime: block.timestamp + lockingPeriod,
+            unlockTime: unlockTime,
             locked: true
         });
         bArtMetis.mint(msg.sender, stakeLockActionsCount, _artMetisAmount, "");
@@ -107,7 +109,8 @@ contract StakeAndLock {
             msg.sender,
             msg.value,
             _artMetisAmount,
-            _referralId
+            _referralId,
+            unlockTime
         );
 
         return _artMetisAmount;

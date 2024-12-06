@@ -1,5 +1,4 @@
-
-type StakedAndLocked @entity(immutable: true) {
+type StakedAndLocked @entity(immutable: false) {
   id: Bytes!
   actionId: BigInt!
   user: String!
@@ -7,17 +6,24 @@ type StakedAndLocked @entity(immutable: true) {
   artMetisAmount: BigInt!
   referralId: String!
   unlockTime: BigInt!
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
+  stakedAndLockedTransactionHash: Bytes!
+  stakedAndLockedEventLogIndex: BigInt!
+  stakedAndLockedBlockNumber: BigInt!
+  stakedAndLockedBlockTimestamp: BigInt!
+  unlockedTransactionHash: Bytes
+  unlockedEventLogIndex: BigInt
+  unlockedBlockNumber: BigInt
+  unlockedBlockTimestamp: BigInt
+  unlocked: Boolean!
 }
 
 type Participant @entity(immutable: false) {
-	id: Bytes!
-	address: String!
-	totalMetisAmount: BigInt!
+  id: Bytes!
+  address: String!
+  totalMetisAmount: BigInt!
   totalArtMetisAmount: BigInt!
-	totalActionsCount: BigInt!
-	firstBlockNumber: BigInt!
-	lastBlockNumber: BigInt!
+  totalActionsCount: BigInt!
+  firstBlockNumber: BigInt!
+  lastBlockNumber: BigInt!
 }
+

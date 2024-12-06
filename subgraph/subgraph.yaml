@@ -24,4 +24,7 @@ dataSources:
       eventHandlers:
         - event: StakedAndLocked(indexed uint256,indexed address,uint256,uint256,indexed string,uint256)
           handler: handleStakedAndLocked
+        - event: Unlock(indexed uint256,indexed address,uint256)
+          handler: handleUnlocked
       file: ./src/artmetis-staking.ts
+

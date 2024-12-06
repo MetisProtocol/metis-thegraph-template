@@ -1,13 +1,13 @@
-import { StakedAndLocked as StakedAndLockedEvent } from "../generated/StakeAndLock/StakeAndLock";
+import { StakedAndLocked as StakedAndLockedEvent, Unlock as UnlockedEvent } from "../generated/StakeAndLock/StakeAndLock";
 import { Participant, StakedAndLocked } from "../generated/schema";
-import { BigInt } from "@graphprotocol/graph-ts";
+import { BigInt, Bytes } from "@graphprotocol/graph-ts";
 
 
 let one = BigInt.fromI32(1);
 
 export function handleStakedAndLocked(event: StakedAndLockedEvent): void {
     let entity = new StakedAndLocked(
-        event.transaction.hash.concatI32(event.logIndex.toI32())
+        Bytes.fromBigInt(event.params.actionId)
     );
 
     entity.actionId = event.params.actionId;
@@ -18,9 +18,11 @@ export function handleStakedAndLocked(event: StakedAndLockedEvent): void {
     entity.referralId = event.params.referralId.toString();
     entity.unlockTime = event.params.unlockTime;
 
-    entity.blockNumber = event.block.number;
-    entity.blockTimestamp = event.block.timestamp;
-    entity.transactionHash = event.transaction.hash;
+    entity.stakedAndLockedBlockNumber = event.block.number;
+    entity.stakedAndLockedBlockTimestamp = event.block.timestamp;
+    entity.stakedAndLockedTransactionHash = event.transaction.hash;
+    entity.stakedAndLockedEventLogIndex = event.logIndex;
+    entity.unlocked = false;
 
     entity.save();
 
@@ -45,4 +47,18 @@ export function handleStakedAndLocked(event: StakedAndLockedEvent): void {
     participant.lastBlockNumber = event.block.number;
 
     participant.save();
+}
+
+export function handleUnlocked(event: UnlockedEvent): void {
+    let entity = new StakedAndLocked(
+        Bytes.fromBigInt(event.params.actionId)
+    );
+
+    entity.unlockedBlockNumber = event.block.number;
+    entity.unlockedBlockTimestamp = event.block.timestamp;
+    entity.unlockedTransactionHash = event.transaction.hash;
+    entity.unlockedEventLogIndex = event.logIndex;
+    entity.unlocked = true;
+
+    entity.save();
 }

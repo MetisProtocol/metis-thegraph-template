@@ -51,7 +51,12 @@ contract StakeAndLock is Ownable(msg.sender) {
         string indexed referralId,
         uint256 unlockTime
     );
-    event Unlock(uint256 artMetisAmount, uint256 when);
+
+    event Unlock(
+        uint256 indexed actionId,
+        address indexed user,
+        uint256 artMetisAmount
+    );
 
     constructor(
         uint256 _startTime,
@@ -135,7 +140,7 @@ contract StakeAndLock is Ownable(msg.sender) {
         bool transferred = artMetis.transfer(msg.sender, _artMetisAmount);
         assert(transferred);
 
-        emit Unlock(_artMetisAmount, block.timestamp);
+        emit Unlock(actionId, msg.sender, _artMetisAmount);
     }
 
     /**

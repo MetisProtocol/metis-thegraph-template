@@ -212,7 +212,7 @@ describe("StakeAndLock", function () {
       await time.increaseTo(tryUnlockTime);
       const tx = stakeAndLock.connect(account).unlock(actionId);
 
-      expect(tx).to.emit(stakeAndLock, "Unlock").withArgs(ONE_GWEI, stakeTime + 1);
+      expect(tx).to.emit(stakeAndLock, "Unlock").withArgs(actionId, account.address, ONE_GWEI);
 
       // totalMetisStaked
       expect(await stakeAndLock.totalMetisStaked(account), "totalMetisStaked mapping wrong").to.eq(ONE_GWEI);

@@ -24,8 +24,8 @@ contract StakeAndLock is Ownable(msg.sender) {
     }
 
     // staking contract
-    IAMTDepositPool immutable amtDepositPool;
-    IArtMetis immutable artMetis;
+    IAMTDepositPool public immutable amtDepositPool;
+    IArtMetis public immutable artMetis;
     // ERC1155Supply to keep track of staking actions
     BArtMetis public bArtMetis;
 

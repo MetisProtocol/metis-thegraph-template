@@ -1,12 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.22;
 
-
 import {BArtMetis} from "./BArtMetis.sol";
 
 import {IAMTDepositPool} from "./interfaces/IAMTDepositPool.sol";
 import {IArtMetis} from "./interfaces/IArtMetis.sol";
-
 
 /**
  * @title VestingVault
@@ -22,9 +20,9 @@ contract StakeAndLock {
         uint256 unlockTime; // when a user can unlock their artMetis tokens.
         bool locked;
     }
-    
+
     // staking contract
-    IAMTDepositPool immutable amtDepositPool; 
+    IAMTDepositPool immutable amtDepositPool;
     IArtMetis immutable artMetis;
     // ERC1155Supply to keep track of staking actions
     BArtMetis public bArtMetis;
@@ -52,18 +50,27 @@ contract StakeAndLock {
     );
     event Unlock(uint256 artmetisAmount, uint256 when);
 
-    constructor(uint256 _startTime, uint256 _endTime, uint256 _lockingPeriod, address _amtDepositPoolAddress, address _artmetisAddress) {
-        require(
-            block.timestamp < _endTime,
-            "End time should be in the future"
-        );
+    constructor(
+        uint256 _startTime,
+        uint256 _endTime,
+        uint256 _lockingPeriod,
+        address _amtDepositPoolAddress,
+        address _artmetisAddress
+    ) {
+        require(block.timestamp < _endTime, "End time should be in the future");
         require(
             _startTime < _endTime,
             "End time should be strictly larger than start time"
         );
         require(_lockingPeriod > 0, "Locking period can't be zero");
-        require(_amtDepositPoolAddress != address(0), "_amtDepositPoolAddress can't be zero");
-        require(_artmetisAddress != address(0), "_artmetisAddress can't be zero");
+        require(
+            _amtDepositPoolAddress != address(0),
+            "_amtDepositPoolAddress can't be zero"
+        );
+        require(
+            _artmetisAddress != address(0),
+            "_artmetisAddress can't be zero"
+        );
 
         startTime = _startTime;
         endTime = _endTime;
@@ -78,18 +85,21 @@ contract StakeAndLock {
         string calldata _referralId
     ) external payable returns (uint256) {
         require(block.timestamp >= startTime, "You can't deposit yet");
-        require(
-            block.timestamp <= endTime,
-            "You can't stake & lock anymore"
-        );
+        require(block.timestamp <= endTime, "You can't stake & lock anymore");
 
-        uint256 _artMetisAmount = amtDepositPool.deposit{
-            value: msg.value
-        }(_minArtMetisAmountToReceive, _referralId);
+        uint256 _artMetisAmount = amtDepositPool.deposit{value: msg.value}(
+            _minArtMetisAmountToReceive,
+            _referralId
+        );
         ++stakeLockActionsCount;
-        stakeLockActions[stakeLockActionsCount] = StakeLockAction({ metisAmount: msg.value, artMetisAmount: _artMetisAmount, unlockTime: block.timestamp + lockingPeriod, locked: true });
+        stakeLockActions[stakeLockActionsCount] = StakeLockAction({
+            metisAmount: msg.value,
+            artMetisAmount: _artMetisAmount,
+            unlockTime: block.timestamp + lockingPeriod,
+            locked: true
+        });
         bArtMetis.mint(msg.sender, stakeLockActionsCount, _artMetisAmount, "");
-        
+
         totalMetisStaked[msg.sender] += msg.value;
 
         emit StakedAndLocked(
@@ -104,9 +114,15 @@ contract StakeAndLock {
     }
 
     function unlock(uint256 actionId) public {
-        require(stakeLockActions[actionId].locked, "Invalid action id: tokens for this action already unlocked or action never existed");
-        require(block.timestamp > stakeLockActions[actionId].unlockTime, "You can't unlock yet");
-        
+        require(
+            stakeLockActions[actionId].locked,
+            "Invalid action id: tokens for this action already unlocked or action never existed"
+        );
+        require(
+            block.timestamp > stakeLockActions[actionId].unlockTime,
+            "You can't unlock yet"
+        );
+
         stakeLockActions[actionId].locked = false;
         uint256 _artMetisAmount = stakeLockActions[actionId].artMetisAmount;
         bArtMetis.burn(msg.sender, actionId, _artMetisAmount);

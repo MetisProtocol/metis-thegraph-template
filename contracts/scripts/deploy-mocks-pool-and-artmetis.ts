@@ -21,7 +21,7 @@ async function main() {
     console.log(`Deployed to ${artmetisMockedAddress}\n`);
 
     console.log("You can verify the artmetisMocked smart contract with the following command:")
-    console.log(`npx hardhat verify --network ${networkName} ${artmetisMockedAddress} ` + 
+    console.log(`npx hardhat verify --network ${networkName} ${artmetisMockedAddress} ` +
         `${account.address}\n\n`);
 
     const amtDepositPoolMock = await new AMTDepositPoolMock__factory(account).deploy(artmetisMockedAddress);
@@ -36,7 +36,7 @@ async function main() {
     console.log(`Deployed to ${amtDepositPoolMockAddress}\n`);
 
     console.log("You can verify the amtDepositPoolMock smart contract with the following command:")
-    console.log(`npx hardhat verify --network ${networkName} ${amtDepositPoolMockAddress} ` + 
+    console.log(`npx hardhat verify --network ${networkName} ${amtDepositPoolMockAddress} ` +
         `${artmetisMockedAddress}`
     );
 

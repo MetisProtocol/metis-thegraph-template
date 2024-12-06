@@ -5,7 +5,6 @@ import {IAMTDepositPool} from "../interfaces/IAMTDepositPool.sol";
 import {IArtMetis} from "../interfaces/IArtMetis.sol";
 import {ERC20Burnable} from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 
-
 contract AMTDepositPoolMock is IAMTDepositPool {
     address immutable artmetis;
     uint256 public totalDeposits;

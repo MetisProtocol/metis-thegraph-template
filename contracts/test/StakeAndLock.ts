@@ -163,12 +163,12 @@ describe("StakeAndLock", function () {
       await time.increaseTo(secondStakeTime);
       await stakeAndLock.connect(otherAccount).deposit(0, "bla", { value: 2 * ONE_GWEI });
       const secondActionId = 2; // first action
-      
-       // check BArtMetis balance
-       expect(await bArtMetis.balanceOf(account, firstActionId)).to.eq(ONE_GWEI);
-       expect(await bArtMetis.balanceOf(account, secondActionId)).to.eq(0);
-       expect(await bArtMetis.balanceOf(otherAccount, firstActionId)).to.eq(0);
-       expect(await bArtMetis.balanceOf(otherAccount, secondActionId)).to.eq(2 * ONE_GWEI);
+
+      // check BArtMetis balance
+      expect(await bArtMetis.balanceOf(account, firstActionId)).to.eq(ONE_GWEI);
+      expect(await bArtMetis.balanceOf(account, secondActionId)).to.eq(0);
+      expect(await bArtMetis.balanceOf(otherAccount, firstActionId)).to.eq(0);
+      expect(await bArtMetis.balanceOf(otherAccount, secondActionId)).to.eq(2 * ONE_GWEI);
     })
 
     it("Can't call unlock before the unlock time", async function () {
@@ -186,7 +186,7 @@ describe("StakeAndLock", function () {
       );
     })
 
-    it("Should deposit, then other account tries unlocking and fails", async function() {
+    it("Should deposit, then other account tries unlocking and fails", async function () {
       const { stakeAndLock, otherAccount, bArtMetis, lockingPeriod, account, ONE_GWEI, startTime } = await loadFixture(deployTwentyOneDayLockFixture);
       const stakeTime = startTime + 24 * 60 * 60;
       const tryUnlockTime = stakeTime + lockingPeriod + 24 * 60 * 60; // one day after the locking period ends
@@ -213,7 +213,7 @@ describe("StakeAndLock", function () {
       const tx = stakeAndLock.connect(account).unlock(actionId);
 
       expect(tx).to.emit(stakeAndLock, "Unlock").withArgs(ONE_GWEI, stakeTime + 1);
-      
+
       // totalMetisStaked
       expect(await stakeAndLock.totalMetisStaked(account), "totalMetisStaked mapping wrong").to.eq(ONE_GWEI);
 

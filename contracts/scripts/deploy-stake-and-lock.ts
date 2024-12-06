@@ -27,7 +27,7 @@ async function main() {
             lockingPeriod: 21 * 24 * 60 * 60,  // 21 days
             // mocked deployments
             amtDepositPoolAddress: "0x9432Cd7760921819a64526a226461a6a7d7C9219",
-            artmetisAddress: "0xca2379a781fF299887eA154886b8019D94f18097" 
+            artmetisAddress: "0xca2379a781fF299887eA154886b8019D94f18097"
         }
     }
 
@@ -47,8 +47,8 @@ async function main() {
     console.log(`Deployed to ${contractAddress}`)
 
     console.log("You can verify the smart contract with the following command:")
-    console.log(`npx hardhat verify --network ${networkName} ${contractAddress} ` + 
-        `${initPrams.startTime} ${initPrams.endTime} ${initPrams.lockingPeriod} ` + 
+    console.log(`npx hardhat verify --network ${networkName} ${contractAddress} ` +
+        `${initPrams.startTime} ${initPrams.endTime} ${initPrams.lockingPeriod} ` +
         `${initPrams.amtDepositPoolAddress} ${initPrams.artmetisAddress}`)
 }
 

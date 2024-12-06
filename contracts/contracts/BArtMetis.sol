@@ -18,27 +18,43 @@ contract BArtMetis is ERC1155Supply, Ownable(msg.sender) {
      *
      * - the caller must have the `MINTER_ROLE`.
      */
-    function mint(address to, uint256 id, uint256 amount, bytes memory data) public virtual onlyOwner {
+    function mint(
+        address to,
+        uint256 id,
+        uint256 amount,
+        bytes memory data
+    ) public virtual onlyOwner {
         _mint(to, id, amount, data);
     }
 
     /**
      * @dev xref:ROOT:erc1155.adoc#batch-operations[Batched] variant of {mint}.
      */
-    function mintBatch(address to, uint256[] memory ids, uint256[] memory amounts, bytes memory data)
-        public
-        virtual
-        onlyOwner
-    {
+    function mintBatch(
+        address to,
+        uint256[] memory ids,
+        uint256[] memory amounts,
+        bytes memory data
+    ) public virtual onlyOwner {
         _mintBatch(to, ids, amounts, data);
     }
 
-    function burn(address account, uint256 id, uint256 value) public virtual onlyOwner {
+    function burn(
+        address account,
+        uint256 id,
+        uint256 value
+    ) public virtual onlyOwner {
         _burn(account, id, value);
     }
 
-    function burnBatch(address account, uint256[] memory ids, uint256[] memory values) public virtual onlyOwner {
-        if (account != _msgSender() && !isApprovedForAll(account, _msgSender())) {
+    function burnBatch(
+        address account,
+        uint256[] memory ids,
+        uint256[] memory values
+    ) public virtual onlyOwner {
+        if (
+            account != _msgSender() && !isApprovedForAll(account, _msgSender())
+        ) {
             revert ERC1155MissingApprovalForAll(_msgSender(), account);
         }
 
@@ -48,11 +64,13 @@ contract BArtMetis is ERC1155Supply, Ownable(msg.sender) {
     /**
      * @dev See {IERC1155-safeTransferFrom}.
      */
-    function safeTransferFrom(address from, address to, uint256 id, uint256 value, bytes memory data)
-        public
-        virtual
-        override
-    {
+    function safeTransferFrom(
+        address from,
+        address to,
+        uint256 id,
+        uint256 value,
+        bytes memory data
+    ) public virtual override {
         revert("rMetis: Non Transferrable Token");
     }
 

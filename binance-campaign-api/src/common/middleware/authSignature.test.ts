@@ -2,7 +2,7 @@
 import request from 'supertest';
 import express from 'express';
 import { authSignature } from './authSignature';
-import { ResponseCode } from '../models/serviceResponse2';
+import { ResponseCode } from '../models/serviceResponse';
 import * as rsaUtils from '@/common/utils/rsa'; // Import the entire module
 
 jest.mock('@/common/utils/rsa');

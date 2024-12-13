@@ -5,7 +5,7 @@ import {
     ResponseCode,
     responseCodeToStatus,
     ResponseWrapper,
-} from '@/common/models/serviceResponse2';
+} from '@/common/models/serviceResponse';
 import { loadRsaPublicKeyFromBase64, verify } from '@/common/utils/rsa';
 import { StatusCodes } from 'http-status-codes';
 import { DoNothingError } from '../utils/error';

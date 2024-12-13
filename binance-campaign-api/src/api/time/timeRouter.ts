@@ -3,7 +3,7 @@ import {
     ResponseCode,
     responseCodeToStatus,
     ResponseWrapper,
-} from '@/common/models/serviceResponse2';
+} from '@/common/models/serviceResponse';
 
 const timeRouter = Router();
 

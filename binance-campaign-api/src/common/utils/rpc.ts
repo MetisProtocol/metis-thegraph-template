@@ -1,6 +1,5 @@
 import { ethers } from 'ethers';
 import { env } from './envConfig';
-import '@/common/abis/StakeAndLock';
 
 const provider = new ethers.JsonRpcProvider(env.METIS_RPC);
 

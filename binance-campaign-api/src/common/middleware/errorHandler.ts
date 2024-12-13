@@ -3,7 +3,7 @@ import { StatusCodes } from 'http-status-codes';
 import {
     ResponseCode,
     ResponseWrapper,
-} from '@/common/models/serviceResponse2';
+} from '@/common/models/serviceResponse';
 
 const unexpectedRequest: RequestHandler = (_req, res) => {
     const response: ResponseWrapper<null> = {

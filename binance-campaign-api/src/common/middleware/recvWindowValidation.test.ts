@@ -4,7 +4,7 @@ import { recvWindowValidation } from './recvWindowValidation';
 import {
     ResponseCode,
     responseCodeToStatus,
-} from '@/common/models/serviceResponse2';
+} from '@/common/models/serviceResponse';
 
 describe('recvWindowValidation middleware', () => {
     let app: express.Express;

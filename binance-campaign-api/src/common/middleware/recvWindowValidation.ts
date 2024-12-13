@@ -4,7 +4,7 @@ import {
     ResponseCode,
     responseCodeToStatus,
     ResponseWrapper,
-} from '@/common/models/serviceResponse2';
+} from '@/common/models/serviceResponse';
 import { StatusCodes } from 'http-status-codes';
 import { DoNothingError } from '../utils/error';
 

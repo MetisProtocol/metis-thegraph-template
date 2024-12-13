@@ -4,7 +4,6 @@ import helmet from 'helmet';
 import { pino } from 'pino';
 
 // import { openAPIRouter } from "@/api-docs/openAPIRouter";
-// import { userRouter } from "@/api/user/userRouter";
 import { timeRouter } from '@/api/time/timeRouter';
 import { taskRouter } from './api/task/taskRouter';
 import errorHandler from '@/common/middleware/errorHandler';
@@ -29,7 +28,6 @@ app.use(helmet());
 app.use(requestLogger);
 
 // Routes
-// app.use("/users", userRouter);
 app.use('/time', timeRouter);
 app.use('/v1/task', taskRouter);
 

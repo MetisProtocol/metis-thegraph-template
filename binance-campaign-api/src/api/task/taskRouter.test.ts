@@ -4,7 +4,7 @@ import { taskRouter } from './taskRouter';
 import {
     ResponseCode,
     responseCodeToStatus,
-} from '@/common/models/serviceResponse2';
+} from '@/common/models/serviceResponse';
 import * as authSignatureModule from '@/common/middleware/authSignature';
 import * as recvWindowValidationModule from '@/common/middleware/recvWindowValidation';
 import * as checkers from '@/common/utils/checkers';

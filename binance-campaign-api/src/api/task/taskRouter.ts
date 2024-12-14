@@ -121,7 +121,6 @@ taskRouter.get('/completion', async (req: Request, res: Response) => {
                 message: 'invalid argument',
                 data: null,
             };
-            console.log(e);
             res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(response);
         }
     }

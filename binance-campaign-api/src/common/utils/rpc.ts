@@ -3,7 +3,7 @@ import { env } from './envConfig';
 
 const provider = new ethers.JsonRpcProvider(env.METIS_RPC);
 
-const abi = [
+export const abi = [
     {
         inputs: [
             {

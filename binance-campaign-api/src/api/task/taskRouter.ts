@@ -11,9 +11,11 @@ import {
     isArrayOfStrings,
     isEvmAddress,
 } from '@/common/utils/checkers';
-import { contract } from '@/common/utils/rpc';
+import { abi } from '@/common/utils/rpc';
 import { authSignature } from '@/common/middleware/authSignature';
 import { recvWindowValidation } from '@/common/middleware/recvWindowValidation';
+import { ethers } from 'ethers';
+import { env } from '@/common/utils/envConfig';
 
 const taskRouter = express.Router();
 taskRouter.use(authSignature, recvWindowValidation);
@@ -83,6 +85,13 @@ taskRouter.get('/completion', async (req: Request, res: Response) => {
             );
             throw new DoNothingError('');
         }
+
+        const provider = new ethers.JsonRpcProvider(env.METIS_RPC);
+        const contract = new ethers.Contract(
+            env.CONTRACT_ADDRESS,
+            abi,
+            provider,
+        );
 
         const promises = task.map(async task => {
             if (task === 'stake') {

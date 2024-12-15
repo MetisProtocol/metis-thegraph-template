@@ -22,6 +22,8 @@ taskRouter.use(authSignature, recvWindowValidation);
 
 const allowedTaskNames = ['stake'];
 
+const ONE_METIS = ethers.parseEther("1");
+
 taskRouter.get('/completion', async (req: Request, res: Response) => {
     try {
         const { task: taskString, walletAddress } = req.query;
@@ -49,8 +51,8 @@ taskRouter.get('/completion', async (req: Request, res: Response) => {
             throw new DoNothingError('');
         }
 
-        const task: string[] = JSON.parse(taskString);
-        if (!arrayHasAllowedValues(task, allowedTaskNames)) {
+        const tasks: string[] = JSON.parse(taskString);
+        if (!arrayHasAllowedValues(tasks, allowedTaskNames)) {
             const response: ResponseWrapper<null> = {
                 code: ResponseCode.InvalidArgument,
                 message: 'invalid argument: one of task element is not valid',
@@ -93,24 +95,26 @@ taskRouter.get('/completion', async (req: Request, res: Response) => {
             provider,
         );
 
-        const promises = task.map(async task => {
+        const uniqueTasks = [...new Set(tasks)];
+
+        const promises = uniqueTasks.map(async task => {
             if (task === 'stake') {
                 const totalMetisStaked: bigint =
                     await contract.totalMetisStaked(walletAddress);
-                console.log(totalMetisStaked);
-                console.log(typeof totalMetisStaked);
-                return totalMetisStaked.toString();
+                const success = totalMetisStaked >= ONE_METIS;
+                return [task, success];
             }
             // We already made sure all values in task are valid.
             // this is kept for typescript
-            return '0';
+            throw new Error("One of the tasks is invalid");
         });
         const resolved = await Promise.all(promises);
+        const responseData = Object.fromEntries(resolved);
 
-        const response: ResponseWrapper<string[]> = {
+        const response: ResponseWrapper<any> = {
             code: ResponseCode.Success,
             message: 'success',
-            data: resolved,
+            data: responseData,
         };
         res.status(responseCodeToStatus(ResponseCode.Success)).json(response);
     } catch (e) {

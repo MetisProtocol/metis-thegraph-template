@@ -22,9 +22,9 @@ async function main() {
             artmetisAddress: "0x2583A2538272f31e9A15dD12A432B8C96Ab4821d"
         },
         mts_sepolia: {
-            startTime: 1736402400,             // Tuesday, January 9, 2025 6:00:00 AM
-            endTime: 1738216800,               // Tuesday, January 30, 2025 6:00:00 AM
-            lockingPeriod: 21 * 24 * 60 * 60,  // 21 days
+            startTime: 1734220800,             // Sunday, December 15, 2024 12:00:00 AM
+            endTime: 1735516800,               // Monday, December 30, 2024 12:00:00 AM
+            lockingPeriod: 15 * 24 * 60 * 60,  // 15 days
             // mocked deployments
             amtDepositPoolAddress: "0x9432Cd7760921819a64526a226461a6a7d7C9219",
             artmetisAddress: "0xca2379a781fF299887eA154886b8019D94f18097"

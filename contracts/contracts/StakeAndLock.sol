@@ -9,7 +9,7 @@ import {IAMTDepositPool} from "./interfaces/IAMTDepositPool.sol";
 import {IArtMetis} from "./interfaces/IArtMetis.sol";
 
 /**
- * @title VestingVault
+ * @title StakeAndLock
  * @dev A contract for managing the binance campaign. It stakes Metis on behalf of users on Artemis.
  * It locks the received ArtMetis tokens and unlocks them only when a certain period (21 days) has passed.
  * The locking applies for each staking action. A user has to unlock multiple times if they did multiple

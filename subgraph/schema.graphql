@@ -1,5 +1,5 @@
 type StakedAndLocked @entity(immutable: false) {
-  id: Bytes!
+  id: String!
   actionId: BigInt!
   user: String!
   metisAmount: BigInt!

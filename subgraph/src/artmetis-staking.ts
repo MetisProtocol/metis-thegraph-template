@@ -7,7 +7,7 @@ let one = BigInt.fromI32(1);
 
 export function handleStakedAndLocked(event: StakedAndLockedEvent): void {
     let entity = new StakedAndLocked(
-        Bytes.fromBigInt(event.params.actionId)
+        event.params.actionId.toHexString()
     );
 
     entity.actionId = event.params.actionId;
@@ -32,17 +32,21 @@ export function handleStakedAndLocked(event: StakedAndLockedEvent): void {
         participant = new Participant(event.params.user);
         participant.address = event.params.user.toHexString();
         participant.firstBlockNumber = event.block.number;
+        participant.totalMetisAmount = event.params.metisAmount;
+        participant.totalArtMetisAmount = event.params.artMetisAmount;
+        participant.totalActionsCount = one;
     }
-
-    participant.totalMetisAmount = participant.totalMetisAmount.plus(
-        event.params.metisAmount
-    );
-    participant.totalArtMetisAmount = participant.totalArtMetisAmount.plus(
-        event.params.artMetisAmount
-    );
-    participant.totalActionsCount = participant.totalActionsCount.plus(
-        one
-    );
+    else {
+        participant.totalMetisAmount = participant.totalMetisAmount.plus(
+            event.params.metisAmount
+        );
+        participant.totalArtMetisAmount = participant.totalArtMetisAmount.plus(
+            event.params.artMetisAmount
+        );
+        participant.totalActionsCount = participant.totalActionsCount.plus(
+            one
+        );
+    }
 
     participant.lastBlockNumber = event.block.number;
 
@@ -51,7 +55,7 @@ export function handleStakedAndLocked(event: StakedAndLockedEvent): void {
 
 export function handleUnlocked(event: UnlockedEvent): void {
     let entity = new StakedAndLocked(
-        Bytes.fromBigInt(event.params.actionId)
+        event.params.actionId.toHexString()
     );
 
     entity.unlockedBlockNumber = event.block.number;

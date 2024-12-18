@@ -6,11 +6,11 @@ schema:
 dataSources:
   - kind: ethereum
     name: StakeAndLock
-    network: mainnet
+    network: andromeda
     source:
-      address: "0x96C4A48Abdf781e9c931cfA92EC0167Ba219ad8E" # todo: change this address
+      address: "0x92000a7CafC66Ac90dE6EEc9f12EbaBeb9f40bcE" # todo: change this address
       abi: StakeAndLock
-      startBlock: 19105079 # todo: change this to to a block when the contract is deployed.
+      startBlock: 19212734 # todo: change this to to a block when the contract is deployed.
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7

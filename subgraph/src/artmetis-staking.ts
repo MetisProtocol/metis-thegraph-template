@@ -15,7 +15,7 @@ export function handleStakedAndLocked(event: StakedAndLockedEvent): void {
 
     entity.metisAmount = event.params.metisAmount;
     entity.artMetisAmount = event.params.artMetisAmount;
-    entity.referralId = event.params.referralId.toString();
+    entity.referralId = event.params.referralId.toHexString();
     entity.unlockTime = event.params.unlockTime;
 
     entity.stakedAndLockedBlockNumber = event.block.number;

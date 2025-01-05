@@ -1,3 +1,16 @@
+type System @entity(immutable: false) {
+  id: ID!
+  totalParticipants: Int!
+  totalEligibleParticipants: Int!
+
+  totalMetisStakedByAll: BigInt!
+  totalArtMetisLockedByAll: BigInt!
+  totalActionsCountByAll: BigInt!
+
+  totalUnlockActionsByAll: BigInt!
+  totalArtMetisUnlockedByAll: BigInt!
+}
+
 type StakedAndLocked @entity(immutable: false) {
   id: String!
   actionId: BigInt!
@@ -25,5 +38,12 @@ type Participant @entity(immutable: false) {
   totalActionsCount: BigInt!
   firstBlockNumber: BigInt!
   lastBlockNumber: BigInt!
+}
+
+# this entity is to ease ranking on the frontend as the number of unique values users will stake is low
+type CountByMetisAmountStaked @entity(immutable: false) {
+  id: String!
+  amount: BigInt!
+  count: Int!
 }
 

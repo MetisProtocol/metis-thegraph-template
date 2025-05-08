@@ -1,3 +1,4 @@
+# System entity where we will store overall incremental analytics
 type System @entity(immutable: false) {
   id: ID!
   totalParticipants: Int!
@@ -11,7 +12,8 @@ type System @entity(immutable: false) {
   totalArtMetisUnlockedByAll: BigInt!
 }
 
-type StakedAndLocked @entity(immutable: false) {
+# Staking position entity where we will register and unlock each staking position
+type Position @entity(immutable: false) {
   id: String!
   actionId: BigInt!
   user: String!
@@ -30,6 +32,7 @@ type StakedAndLocked @entity(immutable: false) {
   unlocked: Boolean!
 }
 
+# Participant where we will keep the user position data
 type Participant @entity(immutable: false) {
   id: Bytes!
   address: String!
@@ -40,10 +43,4 @@ type Participant @entity(immutable: false) {
   lastBlockNumber: BigInt!
 }
 
-# this entity is to ease ranking on the frontend as the number of unique values users will stake is low
-type CountByMetisAmountStaked @entity(immutable: false) {
-  id: String!
-  amount: BigInt!
-  count: Int!
-}
 

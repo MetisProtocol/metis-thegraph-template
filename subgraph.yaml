@@ -1,4 +1,4 @@
-specVersion: 1.0.0
+specVersion: 1.3.0
 indexerHints:
   prune: auto
 schema:
@@ -6,25 +6,25 @@ schema:
 dataSources:
   - kind: ethereum
     name: StakeAndLock
-    network: andromeda
+    network: metis
     source:
-      address: "0xc622d418b9a8218448AE2DB1aE6d9Ee0FaB52031" # todo: change this address
-      abi: StakeAndLock
-      startBlock: 19372921 # todo: change this to to a block when the contract is deployed.
-    mapping:
+      address: "0xc622d418b9a8218448AE2DB1aE6d9Ee0FaB52031" # Your contract address goes here
+      abi: StakeAndLock # Your contract ABI goes here
+      startBlock: 19372921 # The desired block number for starting the indexing from
+    mapping: # Replace the following mapping with a custom mapping that fits your contract
       kind: ethereum/events
-      apiVersion: 0.0.7
+      apiVersion: 0.0.9
       language: wasm/assemblyscript
-      entities:
-        - StakedAndLocked
-        - Participant
-      abis:
-        - name: StakeAndLock
+      entities: # graphql entities that will be affected from the Schema
+        - StakedAndLocked 
+        - Participant 
+      abis: # ABIs that will be used 
+        - name: StakeAndLock 
           file: ./abis/StakeAndLock.json
-      eventHandlers:
+      eventHandlers: ## Can have many event handlers, each handler is a function that would be in mapping.ts
         - event: StakedAndLocked(indexed uint256,indexed address,uint256,uint256,indexed string,uint256)
           handler: handleStakedAndLocked
         - event: Unlock(indexed uint256,indexed address,uint256)
           handler: handleUnlocked
-      file: ./src/artmetis-staking.ts
+      file: ./src/mapping.ts
 

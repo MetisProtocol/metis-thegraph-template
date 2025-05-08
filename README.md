@@ -6,7 +6,6 @@ This is a template for creating a custom subgraph for Metis contracts. Follow th
 
 - Node.js version 20 (as specified in .nvmrc)
 - Yarn package manager
-- A crypto wallet (MetaMask recommended)
 - A deployed smart contract on Metis network (follow the [docs](https://docs.metis.io/andromeda/dapp/start/deploy/foundry))
 
 ## Step-by-Step Guide
